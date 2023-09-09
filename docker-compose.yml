@@ -1,0 +1,32 @@
+version: "3"
+services:
+
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment: 
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - '5555:5432'
+    volumes:
+      - ./db/postgres-data:/var/lib/postgresql/data
+
+  app:
+    image: golang:1.21-alpine  
+    environment:
+      - DEBUG=1
+      - ENV
+    ports:
+      - "3000:3000"
+      - "443:443"
+    volumes:
+      - ./backend:/backend
+    command: sh -c "cd /backend && go install github.com/githubnemo/CompileDaemon  && CompileDaemon -log-prefix=false -build='go build -o main .' -command='./main'"
+    links:
+      - postgres
