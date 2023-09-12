@@ -61,6 +61,27 @@ func main() {
 
 	DB.AutoMigrate(&CreatedUser{})
 
+	r.GET("/post", func(c *gin.Context) {
+
+		usr := CreatedUser{Name: "Sal", Email: "sal@e.com"}
+		DB.Create(&usr)
+
+		log.Printf("User created successfully. id: %v", usr.ID)
+
+		c.JSON(200, gin.H{
+			"message": "successful",
+		})
+	})
+
+	r.GET("/all", func(c *gin.Context) {
+
+		var usrs []CreatedUser
+
+		DB.Find(&usrs)
+
+		c.JSON(200, gin.H{"res": usrs})
+	})
+
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
